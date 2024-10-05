@@ -50,7 +50,7 @@ const images = [
     },
     {
       preview:
-        'https://cdn.pixabay.com/photo/2019/05/16/21/10/landscape-4208255__340.jpg',
+        'https://cdn.pixa   bay.com/photo/2019/05/16/21/10/landscape-4208255__340.jpg',
       original:
         'https://cdn.pixabay.com/photo/2019/05/16/21/10/landscape-4208255_1280.jpg',
       description: 'Nature Landscape',
@@ -64,3 +64,52 @@ const images = [
     },
   ];
   
+
+const galleryContainer = document.querySelector('.gallery');
+const galleryMarkup = images
+  .map(({ preview, original, description }) => {
+    return `
+      <li class="gallery-item">
+        <a class="gallery-link" href="${original}">
+          <img
+            class="gallery-image"
+            src="${preview}"
+            data-source="${original}"
+            alt="${description}"
+          />
+        </a>
+      </li>
+    `;
+  })
+  .join('');
+
+galleryContainer.innerHTML = galleryMarkup;
+
+galleryContainer.addEventListener('click', (event) => {
+  event.preventDefault();
+
+  if (event.target.nodeName !== 'IMG') {
+    return;
+  }
+
+  const largeImageURL = event.target.dataset.source;
+
+  const instance = basicLightbox.create(`
+    <img src="${largeImageURL}" width="800" height="600">
+  `, {
+    onShow: (instance) => {
+      window.addEventListener('keydown', onEscKeyPress);
+    },
+    onClose: (instance) => {
+      window.removeEventListener('keydown', onEscKeyPress);
+    }
+  });
+
+  instance.show();
+
+  function onEscKeyPress(event) {
+    if (event.code === 'Escape') {
+      instance.close();
+    }
+  }
+});
